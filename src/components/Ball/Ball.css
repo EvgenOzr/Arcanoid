@@ -1,0 +1,12 @@
+.ball {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: rgb(238, 224, 103);
+    /* border: 1px solid black; */
+    border-radius: 100%;
+    justify-content: center;
+    top: 590px;
+    left: 50%;
+    transform:translateX(-50%);
+  }

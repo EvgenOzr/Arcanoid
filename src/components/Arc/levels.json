@@ -1,0 +1,14 @@
+{
+    "level_1": {
+        "level": 1,
+        "blockNumber": 39,
+        "blockColor": "green",
+        "row": 9
+    },
+    "level_2": {
+        "level": 2,
+        "blockNumber": 35,
+        "blockColor": "#FF7135",
+        "row": 7
+    }
+}

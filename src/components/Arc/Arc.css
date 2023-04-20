@@ -1,0 +1,13 @@
+.Arcanoid{
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    /* cursor: none; */
+    /* padding: 30px 0 40px 0 */
+}
+.title{
+    text-align: center;
+    font-size: 38px;
+    padding: 5px 0;
+    margin-top: 10px;
+}

@@ -1,0 +1,98 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, sans-serif;
+  /* background-color: rgba(160, 160, 248, 0.657); */
+  /* cursor: none; */
+}
+
+.arcanoid {
+  padding: 50px 0
+}
+
+.arcanoid .title {
+  text-align: center;
+  font-size: 28px;
+  
+}
+
+.cannon__field {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  margin-top: 50px;
+  background: rgba(6, 6, 44, 0.911);
+  /* cursor: none; */
+  /* padding: 30px 0 40px 0 */
+}
+
+.block {
+  position: absolute;
+  top: 50px;
+  /* margin-top: 50px; */
+  /* display: block; */
+  display: flex;
+  /* display: block; */
+  align-items: center ;
+  justify-content: center;
+  width: 100px;
+  height: 40px;
+  padding: 0 10px;
+  background: green;
+  color:  rgb(255, 255, 255);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 24px;
+  /* cursor: pointer; */
+  outline: 0;
+  /* transition: .3s all */
+}
+
+.block__hard {
+  background: rgba(173, 175, 173, 0.822);
+}
+
+.cannon_ball {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background-color: rgb(190, 190, 174);
+  /* border: 1px solid black; */
+  border-radius: 100%;
+  justify-content: center;
+  top: 645px;
+  left: 50%;
+  transform:translateX(-50%);
+}
+
+.cannon_platform {
+  position: absolute;
+  left: 50%;
+  transform:translateX(-50%);
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 20px;
+  padding: 0 10px;
+  background: rgb(114, 155, 194);
+  color:  rgb(255, 255, 255);
+  border: 2px solid rgb(0, 0, 0);
+  text-align: center;
+  font-size: 14px;
+  /* cursor: pointer; */
+  outline: 0;
+  top: 660px;
+  border-radius: 5px;  
+}
+
+.field__bottom {
+  position: absolute;
+  top: 680px;
+  /* width: 100%; */
+  width: 1200px;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.849)
+}

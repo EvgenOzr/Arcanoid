@@ -1,0 +1,25 @@
+.block {
+    position: absolute;
+    top: 50px;
+    /* content: '(*<>*)'; */
+    /* margin-top: 50px; */
+    /* display: block; */
+    display: flex;
+    /* display: block; */
+    align-items: center ;
+    justify-content: center;
+    width: 100px;
+    height: 40px;
+    /* margin-left: 10px; */
+    /* padding: 10 10px; */
+    background-color: green;
+    color:  rgb(255, 255, 255);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 24px;
+    /* cursor: pointer; */
+    outline: 0;
+    /* transition: .3s all */
+  }
