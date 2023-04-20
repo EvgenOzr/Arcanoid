@@ -52,6 +52,7 @@ export default class Field extends Component{
                     break;
             }
             rowNumber ++;
+            console.log(rowNumber);
         }
     }
 
