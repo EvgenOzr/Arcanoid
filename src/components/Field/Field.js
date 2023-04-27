@@ -20,7 +20,7 @@ export default class Field extends Component{
         let rowNumber = 0;
         let blockNumber = this.props.blockNumber;
         //add block
-        const addBlock = (newStartL, newRow) => {
+        const addBlock = (newStartL, newRow, altColor = this.props.blockColor) => {
             if (rowNumber === row){
                 rowNumber = 0;
                 newTop += 60;
@@ -28,7 +28,7 @@ export default class Field extends Component{
                 newLeft = startLeft;
                 row += newRow;
             }
-            newStyle = {left: `${newLeft}px`, top: `${newTop}px`, background: this.props.blockColor}
+            newStyle = {left: `${newLeft}px`, top: `${newTop}px`, background: altColor}
             this.blocks.push(
                 <Block 
                     key={Math.random()}
@@ -43,16 +43,29 @@ export default class Field extends Component{
                     addBlock(60, -1);
                     break;
                 case 2:
-                    addBlock(-60, 1);
+                    (i < 23) ? addBlock(-60, 1) : addBlock(-60, 1, "grey");
                     break;
                 case 3:
-                    (i < 15) ? addBlock(-60, 1) : addBlock(60, -1);
+                    (i < 16) ? addBlock(-60, 1,  "#3835FF") : addBlock(60, -1);
+                    break;
+                case 4:
+                    if (i < 10){
+                        addBlock(60, -1,  "orange")
+                    }else if((i => 10) && (i < 31)){
+                        addBlock(60, -1)
+                    }else if((i > 30) && (i < 46)){
+                        addBlock(-60, 1)
+                    }else if(i => 46){
+                        addBlock(-60, 1,  "orange")
+                    }
+                    break;
+                case 5:
+                    (i <= 28) ? addBlock(-60, 0) : addBlock(60, 0, "grey");
                     break;
                 default:
                     break;
             }
-            rowNumber ++;
-            console.log(rowNumber);
+            rowNumber++;
         }
     }
 
@@ -61,11 +74,9 @@ export default class Field extends Component{
             this.currentLevel = this.props.level;
             this.createBlock();
         } 
-        let classes = '';
-        (this.props.start) ? classes ="field noCursor": classes = "field";
         return(
             <>
-                <div className = {classes}>
+                <div className = 'field'> 
                     {this.blocks}
                 </div>
                 <div className = 'field__bottom'></div>

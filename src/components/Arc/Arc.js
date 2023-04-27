@@ -6,9 +6,15 @@ import Levels from './levels.js';
 import Ball from '../Ball/Ball';
 
 export default class Arc extends Component{
+    constructor(props){
+        super(props);
+        this.state.level = Levels[this.state.level].level;
+        this.state.blockNumber = Levels[this.state.level - 1].blockNumber;
+    }
     state = {
         startGame: false,
-        level: 1,
+        level: 0,
+        blockNumber: 0,
         ballPosition: {},
         platformPosition: {},
     }
@@ -23,15 +29,15 @@ export default class Arc extends Component{
             left;   
         const move = () => {
             left = +getComputedStyle(document.querySelector('.platform')).left.replace(/\D/g, '');
-                (arrowLeft) ? left += -2 : left += 2;
-                if (left < 75) left = 75;
-                if (left > 1125) left = 1125;
-                this.setState({platformPosition: {left:`${left}px`}})
-                if(!this.state.startGame){
-                    this.setState({ballPosition: {left:`${left}px`}})
-                }
-                if (arrowLeft) arrowLeft = setTimeout(move, 2);
-                if (arrowRight) arrowRight = setTimeout(move, 2);
+            (arrowLeft) ? left += -2 : left += 2;
+            if (left < 75) left = 75;
+            if (left > 1125) left = 1125;
+            this.setState({platformPosition: {left:`${left}px`}})
+            if(!this.state.startGame){
+                this.setState({ballPosition: {left:`${left}px`}})
+            }
+            if (arrowLeft) arrowLeft = setTimeout(move, 2);
+            if (arrowRight) arrowRight = setTimeout(move, 2);
         }
         document.addEventListener('keydown', (event) => {
             //джвижение платформы влево
@@ -47,20 +53,14 @@ export default class Arc extends Component{
                 arrowLeft = 0;
             }
             if (event.code === 'Space') {
-                this.setState({startGame: true});
-                this.game();
+                if (!this.state.startGame){
+                    this.setState({startGame: true});
+                    this.game();
+                }
             }
-            // const moveDirection = (direction, ) => {
-            //     if (event.code === direction){
-            //         if(!arrowLeft) arrowLeft = setTimeout(move, 2);
-            //         clearTimeout(arrowRight);
-            //         arrowRight = 0;
-            //     } 
-            // }
-
         });
         document.addEventListener('keyup', (event) => {
-            if ((event.code ==='ArrowLeft') || (event.code === 'ArrowRight')){
+            if ((event.code ==='ArrowLeft') || (event.code === 'ArrowRight') || (event.code === 'Space')){
                clearTimeout(arrowLeft);
                clearTimeout(arrowRight);
                arrowLeft = 0;
@@ -69,9 +69,11 @@ export default class Arc extends Component{
         });
 
     }
+
     changeBallPosition = (newLeft, newTop) => {
         this.setState({ballPosition: {left:`${newLeft}px`, top: `${newTop}px`}})
     }
+
     game = () => {
         let ball = document.querySelector('.ball');
         let platform = document.querySelector('.platform');
@@ -81,9 +83,44 @@ export default class Arc extends Component{
         let direct = true;
         let angle = 0;
         let speed = 13;
-        let win = 0;
-        let blockNumber = Levels[this.state.level - 1].blockNumber;
+        let tempX;
+        let tempY;
+        let ballXY;
+        let platformXY;
+        let blockNumber = this.state.blockNumber;
         let run;
+
+        const removeBlock = (elem) => {
+            if (elem.style.background == "grey"){
+                elem.style.background = "green";
+            } else if (elem.style.background == "orange"){
+                elem.style.background = "grey";
+            } else if (elem.style.background == "black"){
+            } else {
+                elem.remove();
+                blockNumber--;
+                console.log(blockNumber)
+                this.setState({blockNumber: blockNumber})
+                if (blockNumber === 0){
+                    // clearTimeout(run);
+                    // this.stopGame(this.state.level + 1, 600);
+                    // return;
+                    // const endStage = document.createElement('div');
+                    // endStage.classList.add('endstage');
+                    // endStage.innerHTML = `Поздравляем. Уровень пройден. Следующий уровень ${this.state.level + 1}`
+                    // field.append(endStage);
+                    const time = setTimeout(()=>{  
+                        // alert("You are win!")
+                        clearTimeout(run);
+                        // endStage.remove();
+                        this.stopGame(this.state.level + 1, 600);
+                    }, 50);
+                    return;
+                }
+            }
+            if(speed > 1) speed -= 0.5;
+        }
+
         const move = () => {
             //движение по вертикали
             (direct) ? ballTop -= 2 : ballTop += 2;
@@ -91,8 +128,11 @@ export default class Arc extends Component{
             ballLeft += angle;
             this.changeBallPosition(ballLeft, ballTop);
 
-            const ballXY = ball.getBoundingClientRect();
-            const platformXY = platform.getBoundingClientRect();
+            //проверки на столкновение с границами или блоками
+            ballXY = ball.getBoundingClientRect();
+            platformXY = platform.getBoundingClientRect();
+            tempX = ballXY.x;
+            tempY = ballXY.y;
 
             // верхняя граница поля
             if (ballXY.top <= field.getBoundingClientRect().top){                     
@@ -133,59 +173,34 @@ export default class Arc extends Component{
             if ((ballXY.left <= field.getBoundingClientRect().left) || (ballXY.left + ballXY.width >= field.getBoundingClientRect().left+field.getBoundingClientRect().width)){
                 angle *= -1;
             }
-            // столкновение с блоком
-            // блок
-            const checkBlock =() =>{
-                if((elemLeftPoint.classList == "block") || (elemRightPoint.classList == "block")){
+
+            const checkBlock =(lPoint, rPoint, lCheck = null, rCheck = null) =>{
+                if((lPoint.classList == "block") || (rPoint.classList == "block")){
                     // столкновение только левой точкой
-                    if((elemLeftPoint.classList == "block") && (elemRightPoint.classList != "block")){
+                    if((lPoint.classList == "block") && (rPoint.classList != "block")){
                         if(angle){
-                            (checkLeft.classList != "block") ? angle *= -1 : direct *= -1;
+                            (lCheck.classList != "block") ? angle *= -1 : direct *= !direct;
                         } else {
                             direct = !direct;
                         }
-                        removeBlock(elemLeftPoint);
+                        removeBlock(lPoint);
                     }
                     // столкновение только правой точкой
-                    if((elemRightPoint.classList == "block") && (elemLeftPoint.classList != "block")){ 
+                    if((rPoint.classList == "block") && (lPoint.classList != "block")){ 
                         if(angle){
-                            (checkRight.classList != "block") ? angle *= -1 : direct = !direct;
+                            (rCheck.classList != "block") ? angle *= -1 : direct = !direct;
                         } else {
                             direct = !direct;
                         }
-                        removeBlock(elemRightPoint);
+                        removeBlock(rPoint);
                     }
                     // столкновение всей поверхностью
-                    if((elemLeftPoint.classList == "block") && (elemRightPoint.classList == "block")){
+                    if((lPoint.classList == "block") && (rPoint.classList == "block")){
                         direct = !direct;
-                        removeBlock(elemLeftPoint);
-                    }
-                    function removeBlock(elem){
-                        if (elem.style.background == "grey"){
-                            elem.style.background = "green";
-                        } else if (elem.style.background == "orange"){
-                            elem.style.background = "grey";
-                            elem.style.color = "white";
-                        } else if (elem.style.background == "black"){
-                        } else {
-                            elem.remove();
-                            win++;
-                        }
-                        if(speed > 1) speed -= 0.5;
-                        // console.log(win);
-                    }
-                    if (win === blockNumber){
-                        const time = setTimeout(()=>{
-                            alert("You are win!")
-                            clearTimeout(run);
-                            this.stopGame(this.state.level + 1, 600)
-                        }, 50);
-                        return;
+                        removeBlock(lPoint);
                     }
                 }
             }
-            let tempX = ballXY.x;
-            let tempY = ballXY.y;
             // проверка на координатах шарика
             let elemLeftPoint;
             let elemRightPoint;
@@ -195,38 +210,40 @@ export default class Arc extends Component{
                 elemLeftPoint = document.elementFromPoint(tempX, tempY - 1);
                 elemRightPoint = document.elementFromPoint(tempX + 15, tempY - 1);
                 if(angle === 0) {    
-                    checkBlock();
+                    checkBlock(elemLeftPoint, elemRightPoint);
                 } else {
                     checkLeft = document.elementFromPoint(tempX + 1, tempY - 1);
                     checkRight = document.elementFromPoint(tempX + 14, tempY - 1);
-                    checkBlock();
-                    elemLeftPoint = document.elementFromPoint(tempX-1, tempY + 7);
+                    checkBlock(elemLeftPoint, elemRightPoint, checkLeft, checkRight);
+                    elemLeftPoint = document.elementFromPoint(tempX - 1, tempY + 7);
                     elemRightPoint = document.elementFromPoint(tempX + 16, tempY + 7);
-                    checkBlock();
+                    checkBlock(elemLeftPoint, elemRightPoint, checkLeft, checkRight);
                 }
             } else {
                 elemLeftPoint = document.elementFromPoint(tempX, tempY + 16);
                 elemRightPoint = document.elementFromPoint(tempX + 15, tempY + 16);
                 if(angle === 0) {    
-                    checkBlock();
+                    checkBlock(elemLeftPoint, elemRightPoint);
                 } else {
                     checkLeft = document.elementFromPoint(tempX + 1, tempY + 15);
                     checkRight = document.elementFromPoint(tempX + 14, tempY + 15);
-                    checkBlock();
+                    checkBlock(elemLeftPoint, elemRightPoint, checkLeft, checkRight);
                     elemLeftPoint = document.elementFromPoint(tempX-1, tempY + 7);
                     elemRightPoint = document.elementFromPoint(tempX + 16, tempY + 7);
-                    checkBlock();
+                    checkBlock(elemLeftPoint, elemRightPoint, checkLeft, checkRight);
                 }
             }  
             run = setTimeout(move, speed);
         }
         if(this.state.startGame) run = setTimeout(move, speed);
     }
+
     stopGame = (newLevel, ballLeft) =>{
         if (newLevel > this.state.level){
             this.setState({
                 level: newLevel,
                 startGame: false,
+                blockNumber: Levels[newLevel - 1].blockNumber,
                 platformPosition: {left: 600, top: 605}
             })
         }
@@ -236,11 +253,12 @@ export default class Arc extends Component{
             ballPosition: {left: ballLeft, top: 590},
         })
     }
+
     render(){
-        let {blockNumber, blockColor, row, startLeft, newLeft} = Levels[this.state.level - 1];
+        let {blockNumber, blockColor, row, startLeft} = Levels[this.state.level - 1];
         return(
             <>
-                <h1 className='title'>Arcanoid</h1>
+                <h1 className='title'>Arcanoid level - {this.state.level}</h1>
                 <div className = 'Arcanoid'>
                     <Field 
                         start={this.state.startGame}
@@ -249,7 +267,6 @@ export default class Arc extends Component{
                         blockColor = {blockColor}
                         row = {row}
                         startLeft = {startLeft}
-                        // newLeft = {newLeft}
                     />
                     <Platform position = {this.state.platformPosition}/>
                     <Ball position = {this.state.ballPosition} />

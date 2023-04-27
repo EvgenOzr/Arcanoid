@@ -10,4 +10,15 @@
     font-size: 38px;
     padding: 5px 0;
     margin-top: 10px;
+    color: rgb(47, 125, 170)
+}
+.endstage{
+    top: 300px;
+    left: 350px;
+    position: absolute;
+    height: 100px;
+    width: 500px;
+    text-align: center;
+    font-size: 30px;
+    color: rgb(16, 22, 7);
 }
